@@ -1,0 +1,20 @@
+# Database credentials (local only - never commit)
+config/database.php
+
+# User-uploaded content
+assets/images/uploads/
+
+# Logs
+*.log
+*.log.*
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Composer / build artifacts (if added later)
+/vendor/
+node_modules/
