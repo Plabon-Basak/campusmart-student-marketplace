@@ -45,12 +45,9 @@ $perPage = 20;
 $offset = ($page - 1) * $perPage;
 
 $st = $pdo->prepare(
-    'SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?'
+    "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC, id DESC LIMIT $perPage OFFSET $offset"
 );
-$st->bindValue(1, $userId, PDO::PARAM_INT);
-$st->bindValue(2, $perPage, PDO::PARAM_INT);
-$st->bindValue(3, $offset, PDO::PARAM_INT);
-$st->execute();
+$st->execute([$userId]);
 $notifications = $st->fetchAll();
 
 function notification_icon(string $type): string

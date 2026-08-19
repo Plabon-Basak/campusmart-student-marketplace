@@ -69,13 +69,14 @@ if ($targetFilter === 'product') {
 }
 
 $wherePart = substr($sql, strpos($sql, 'WHERE 1=1'));
-$countSt = $pdo->prepare('SELECT COUNT(*) FROM reports r ' . $wherePart);
+$countSt = $pdo->prepare('SELECT COUNT(*) FROM reports r
+        JOIN users rep ON rep.id = r.reporter_id
+        LEFT JOIN users repu ON repu.id = r.reported_user_id
+        LEFT JOIN products p ON p.id = r.product_id ' . $wherePart);
 $countSt->execute($params);
 $total = (int)$countSt->fetchColumn();
 
-$sql .= ' ORDER BY CASE WHEN r.status IN ("pending","under_review") THEN 0 ELSE 1 END, r.created_at DESC LIMIT ? OFFSET ?';
-$params[] = $perPage;
-$params[] = $offset;
+$sql .= " ORDER BY CASE WHEN r.status IN ('pending','under_review') THEN 0 ELSE 1 END, r.created_at DESC LIMIT $perPage OFFSET $offset";
 
 $st = $pdo->prepare($sql);
 $st->execute($params);

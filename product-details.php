@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $st = $pdo->prepare(
                 'INSERT INTO orders (order_code, buyer_id, seller_id, product_id, quantity, unit_price, total_amount, payment_method, payment_status, status, status_history)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, "cash", "pending", "pending", ?)'
+                 VALUES (?, ?, ?, ?, ?, ?, ?, \'cash\', \'pending\', \'pending\', ?)'
             );
             $history = json_encode([['status' => 'pending', 'at' => date('Y-m-d H:i:s')]]);
             $st->execute([$orderCode, current_user_id(), (int)$product['seller_id'], $pid, $qty, $unitPrice, $total, $history]);
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $st = $pdo->prepare(
             'INSERT INTO reports (reporter_id, reported_user_id, product_id, reason, description, status)
-             VALUES (?, ?, ?, ?, ?, "pending")'
+             VALUES (?, ?, ?, ?, ?, \'pending\')'
         );
         $st->execute([current_user_id(), $reportedUserId, $reportProductId, $reason, $description]);
         $reportId = (int)$pdo->lastInsertId();

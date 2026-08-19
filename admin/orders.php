@@ -37,9 +37,7 @@ $countSt = $pdo->prepare('SELECT COUNT(*) FROM orders o JOIN products p ON p.id 
 $countSt->execute($params);
 $total = (int)$countSt->fetchColumn();
 
-$sql .= ' ORDER BY o.created_at DESC LIMIT ? OFFSET ?';
-$params[] = $perPage;
-$params[] = $offset;
+$sql .= ' ORDER BY o.created_at DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 
 $st = $pdo->prepare($sql);
 $st->execute($params);

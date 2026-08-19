@@ -54,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conv = $st->fetch();
     $other = (int)$conv['user_a'] === $userId ? (int)$conv['user_b'] : (int)$conv['user_a'];
     if ($other !== $userId) {
-        $otherUser = get_user($other);
         create_notification($other, 'message', 'New message', $user['full_name'] . ' sent you a message.', $conversationId);
     }
 

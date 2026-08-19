@@ -92,9 +92,7 @@ $countSt = $pdo->prepare('SELECT COUNT(*) FROM products p JOIN categories c ON c
 $countSt->execute($params);
 $total = (int)$countSt->fetchColumn();
 
-$sql .= ' ORDER BY CASE WHEN p.status = "pending" THEN 0 ELSE 1 END, p.created_at DESC LIMIT ? OFFSET ?';
-$params[] = $perPage;
-$params[] = $offset;
+$sql .= " ORDER BY CASE WHEN p.status = 'pending' THEN 0 ELSE 1 END, p.created_at DESC LIMIT $perPage OFFSET $offset";
 
 $st = $pdo->prepare($sql);
 $st->execute($params);

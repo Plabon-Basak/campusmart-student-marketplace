@@ -73,9 +73,7 @@ $countSt = $pdo->prepare('SELECT COUNT(*) FROM users u ' . $wherePart);
 $countSt->execute($params);
 $total = (int)$countSt->fetchColumn();
 
-$sql .= ' ORDER BY u.created_at DESC LIMIT ? OFFSET ?';
-$params[] = $perPage;
-$params[] = $offset;
+$sql .= ' ORDER BY u.created_at DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 
 $st = $pdo->prepare($sql);
 $st->execute($params);

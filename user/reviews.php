@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $st = $pdo->prepare(
-            'INSERT INTO reviews (reviewer_id, reviewed_user_id, order_id, rating, comment, status)
-             VALUES (?, ?, ?, ?, ?, "approved")'
+            "INSERT INTO reviews (reviewer_id, reviewed_user_id, order_id, rating, comment, status)
+             VALUES (?, ?, ?, ?, ?, 'approved')"
         );
         $st->execute([$userId, $reviewedId, $orderId, $rating, $comment]);
     } catch (Throwable $e) {

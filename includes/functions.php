@@ -22,9 +22,7 @@ function db(): PDO
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
         } catch (PDOException $e) {
-            // Never leak connection details to visitors.
             http_response_code(500);
-            require BASE_PATH . '/404.php';
             exit('Database connection failed.');
         }
     }
@@ -487,8 +485,10 @@ function seller_stats(int $userId): array
 function is_trusted_seller(int $userId): bool
 {
     $stats = seller_stats($userId);
-    $minReviews = (int)(settings('trusted_seller_min_reviews') ?: 5);
-    $minRating  = (float)(settings('trusted_seller_min_rating') ?: 4.5);
+    $minReviewsRaw = settings('trusted_seller_min_reviews');
+    $minRatingRaw  = settings('trusted_seller_min_rating');
+    $minReviews = ($minReviewsRaw !== null && $minReviewsRaw !== '') ? (int)$minReviewsRaw : 5;
+    $minRating  = ($minRatingRaw !== null && $minRatingRaw !== '') ? (float)$minRatingRaw : 4.5;
     return $stats['review_count'] >= $minReviews && $stats['avg_rating'] >= $minRating;
 }
 
@@ -698,7 +698,7 @@ function apply_order_transition(PDO $pdo, array $order, string $newStatus, int $
         if ($newStatus === 'completed') {
             $updates[] = 'completed_at = ?';
             $params[]  = $now;
-            $updates[] = 'payment_status = "paid"';
+            $updates[] = "payment_status = 'paid'";
         }
         if ($newStatus === 'cancelled') {
             $updates[] = 'cancelled_at = ?';
@@ -882,12 +882,11 @@ function similar_products(array $product, int $limit = 4): array
          WHERE p.status = 'active' AND u.status = 'active' AND p.id <> ?
            AND (p.category_id = ? OR p.price BETWEEN ? AND ? OR p.condition_label = ?)
          ORDER BY score DESC, p.views DESC
-         LIMIT ?"
+         LIMIT " . (int)$limit
     );
     $st->execute([
         $product['category_id'], $priceMin, $priceMax, $product['condition_label'],
         $product['id'], $product['category_id'], $priceMin, $priceMax, $product['condition_label'],
-        $limit,
     ]);
     return $st->fetchAll();
 }
@@ -905,10 +904,10 @@ function recommendations_for_user(int $userId, int $limit = 4): array
     $profile = $fav->fetchAll();
 
     $ord = db()->prepare(
-        'SELECT p.category_id, p.price FROM orders o
+        "SELECT p.category_id, p.price FROM orders o
          JOIN products p ON p.id = o.product_id
-         WHERE o.buyer_id = ? AND o.status = "completed"
-         ORDER BY o.completed_at DESC LIMIT 6'
+         WHERE o.buyer_id = ? AND o.status = 'completed'
+         ORDER BY o.completed_at DESC LIMIT 6"
     );
     $ord->execute([$userId]);
     $profile = array_merge($profile, $ord->fetchAll());
@@ -947,9 +946,9 @@ function recommendations_for_user(int $userId, int $limit = 4): array
          JOIN users u ON u.id = p.seller_id
          WHERE p.status = 'active' AND u.status = 'active'
          ORDER BY score DESC, p.views DESC
-         LIMIT ?"
+         LIMIT " . (int)$limit
     );
-    $st->execute([$topCat, $avgPrice * 0.7, $avgPrice * 1.3, $limit]);
+    $st->execute([$topCat, $avgPrice * 0.7, $avgPrice * 1.3]);
     return $st->fetchAll();
 }
 

@@ -33,12 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Please enter a valid email address.';
     } else {
-        $domain = settings('email_domain');
-        if (!empty($domain)) {
-            $userDomain = strtolower(substr($old['email'], strpos($old['email'], '@') + 1));
-            if ($userDomain !== strtolower($domain)) {
-                $errors['email'] = 'Registration is restricted to the ' . e($domain) . ' university email domain.';
-            }
+        $userDomain = strtolower(substr($old['email'], strpos($old['email'], '@') + 1));
+        $allowedDomain = strtolower((string)(settings('email_domain') ?: ''));
+        if ($allowedDomain !== '' && $userDomain !== $allowedDomain) {
+            $errors['email'] = 'Registration is restricted to @' . $allowedDomain . ' addresses only.';
         }
     }
     if (!preg_match('/^\+?[0-9]{7,15}$/', str_replace([' ', '-'], '', $old['phone']))) {
@@ -89,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo = db();
             $st = $pdo->prepare(
                 'INSERT INTO users (full_name, student_id, email, phone, password_hash, department, batch, hall, profile_image, role, status, is_verified)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, "student", "active", 1)'
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, \'student\', \'active\', 1)'
             );
             $st->execute([
                 $old['full_name'], $old['student_id'], $old['email'], str_replace(' ', '', $old['phone']),

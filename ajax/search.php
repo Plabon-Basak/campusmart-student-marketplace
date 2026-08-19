@@ -24,16 +24,16 @@ foreach ($terms as $term) {
     $params[] = $pattern;
 }
 
-$sql = 'SELECT p.id, p.title, p.price,
+$sql = "SELECT p.id, p.title, p.price,
                c.name AS category_name,
                (SELECT pi.image_path FROM product_images pi
                 WHERE pi.product_id = p.id ORDER BY pi.is_primary DESC, pi.id ASC LIMIT 1) AS image_path
         FROM products p
         JOIN categories c ON c.id = p.category_id
         JOIN users u ON u.id = p.seller_id
-        WHERE p.status = "active" AND u.status = "active" AND ' . implode(' AND ', $where) . '
+        WHERE p.status = 'active' AND u.status = 'active' AND " . implode(' AND ', $where) . "
         ORDER BY p.views DESC
-        LIMIT 6';
+        LIMIT 6";
 
 $st = db()->prepare($sql);
 $st->execute($params);

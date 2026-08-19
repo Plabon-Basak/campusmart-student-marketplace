@@ -63,13 +63,14 @@ if ($search !== '') {
 }
 
 $wherePart = substr($sql, strpos($sql, 'WHERE 1=1'));
-$countSt = $pdo->prepare('SELECT COUNT(*) FROM reviews r ' . $wherePart);
+$countSt = $pdo->prepare('SELECT COUNT(*) FROM reviews r
+        JOIN users rev ON rev.id = r.reviewer_id
+        JOIN users revu ON revu.id = r.reviewed_user_id
+        JOIN orders o ON o.id = r.order_id ' . $wherePart);
 $countSt->execute($params);
 $total = (int)$countSt->fetchColumn();
 
-$sql .= ' ORDER BY r.created_at DESC LIMIT ? OFFSET ?';
-$params[] = $perPage;
-$params[] = $offset;
+$sql .= ' ORDER BY r.created_at DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 
 $st = $pdo->prepare($sql);
 $st->execute($params);

@@ -18,6 +18,7 @@ if ($product === null || (int)$product['seller_id'] !== current_user_id()) {
 
 $images = product_images($id);
 $maxImages = (int)(settings('max_listing_images') ?: 5);
+$categoryId = (int)$product['category_id'];
 
 // ---------- POST actions ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -131,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'Edit Listing';
 $dashboardPage = true;
+$activeNav = 'listings';
 require __DIR__ . '/../includes/header.php';
 ?>
 

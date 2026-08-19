@@ -17,7 +17,7 @@ $st = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE buyer_id = ? AND status I
 $st->execute([$userId]); $stats['active_purchases'] = (int)$st->fetchColumn();
 $st = $pdo->prepare('SELECT COUNT(*) FROM favorites WHERE user_id = ?');
 $st->execute([$userId]); $stats['favorites'] = (int)$st->fetchColumn();
-$stats['unread_messages'] = unread_notifications_count($userId);
+$stats['unread_notifications'] = unread_notifications_count($userId);
 $st = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE seller_id = ? AND status = 'pending'");
 $st->execute([$userId]);
 $stats['pending_requests'] = (int)$st->fetchColumn();
@@ -95,7 +95,7 @@ require __DIR__ . '/../includes/header.php';
       </div>
       <div class="card stat-card">
         <div class="stat-icon" style="background:var(--color-warning-light);">💬</div>
-        <div class="stat-num"><?= (int)$stats['unread_messages'] ?></div>
+        <div class="stat-num"><?= (int)$stats['unread_notifications'] ?></div>
         <div class="stat-name">Unread Notifications</div>
       </div>
       <div class="card stat-card">
